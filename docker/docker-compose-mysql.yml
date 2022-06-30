@@ -1,0 +1,48 @@
+version: '3'
+services:
+#Insira no arquivo docker-amundsen.yml, a partir daqui    
+  mysql:
+      image: mysql:5.7.33
+      container_name: catalogo_bases
+      ports:
+        - 3306:3306
+#./example/backup:/backup  diretorio de dentro do amundsen
+#- db_data:/var/lib/mysql -> volume criado no final do arquivo
+      volumes:
+        - /home/dcat/Downloads/example/backup:/backup
+        - db_data:/var/lib/mysql
+        - db_restore:/var/restore
+      restart: always
+      environment:
+        MYSQL_ROOT_PASSWORD: my_root_pass
+        MYSQL_DATABASE: my_database
+        MYSQL_USER: rslmatbr_cat_bs1
+        MYSQL_PASSWORD: My_user_pass 
+        
+      networks:
+        - amundsennet
+  phpmyadmin:
+      image: phpmyadmin/phpmyadmin
+      container_name: php_my_admin
+      links: 
+        - mysql
+      environment:
+        PMA_HOST: catalogo_bases
+        #PMA_USER: bastos
+        #PMA_PASSWORD: bastos
+        PMA_PORT: 3306
+        PMA_ARBITRARY: 1
+      restart: always
+      ports:
+        - 8081:80
+      networks:
+        - amundsennet
+# # a Rede já existe
+networks:
+  amundsennet:
+#necessário criar este volume
+volumes:
+  db_data:
+  db_restore:
+
+  
