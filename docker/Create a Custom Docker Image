@@ -1,0 +1,72 @@
+Create a Custom Docker Image
+Introduction
+In this lab you are required to create a custom Docker image of CentOS, and you need to run the Apache web server on it. You can expose port 8080 for Apache. This way when you run your Docker container with the image, to test things out, you will be accessing your web server at port 80 but it will be remapped to port 8080 in the container. In short, you need to write a Dockerfile, populate it with instructions, build an image based on the Dockerfile, and then run the container with that image.
+
+The centos-7-x86_64-docker.tar.xz file is located in /home/cloud_user/.
+
+You need to include it in the Dockerfile, and from it create a docker image for the Apache web server.
+
+Firewalld is up and running.
+
+Logging In
+Use the credentials provided on the hands-on lab overview page, and log in as cloud_user.
+
+Note: Please give the lab an extra minute before connecting via SSH into the instance.
+
+Install and Start Docker
+This will get Docker installed:
+
+sudo yum install docker -y
+Now we want to start it up, and make sure that it starts after a reboot of the server:
+
+sudo systemctl start docker
+sudo systemctl enable docker
+Now let's check to make sure it is up and running:
+
+sudo systemctl status docker
+Write a Dockerfile in /home/cloud_user/ Which Will Be Used to Create a Custom Image
+Create the file (we're using Vim here):
+
+vim /home/cloud_user/Dockerfile
+These contents need to be in it:
+
+FROM scratch
+ADD centos-7-x86_64-docker.tar.xz /
+
+LABEL org.label-schema.schema-version="1.0" \
+    org.label-schema.name="CentOS Base Image" \
+    org.label-schema.vendor="CentOS" \
+    org.label-schema.license="GPLv2" \
+    org.label-schema.build-date="20191001"
+
+RUN yum -y update
+RUN yum -y install httpd
+
+CMD ["/usr/sbin/httpd", "-D", "FOREGROUND"]
+EXPOSE 80
+Now we'll save and quit. Hit ESC, then :wq, and press Enter.
+
+Build an Image from the Dockerfile
+First make sure we're in the right directory:
+
+cd /home/cloud_user/
+Now make the actual build:
+
+sudo docker build -t cloud_user/my_webserver:v1 .
+Once that's finished, check to make sure it was built:
+
+sudo docker images
+As long as we see it listed, we can start it up:
+
+sudo docker run -d -p 8080:80 --restart=always --name my_webserver cloud_user/my_webserver:v1
+Open Port 8080 with Firewalld and Run a Container from an Image and Test It Out
+Now let's visit the container in a web browser. Go to the server's public IP address, on port 8080, which should look something like this:
+
+http://1.2.3.4:8080
+Just be sure to substitute 1.2.3.4 with the actual public IP.
+
+If it doesn't work, we might have to open up ports in firewalld:
+
+sudo firewall-cmd --add-port=8080/tcp --permanent
+sudo firewall-cmd --reload
+

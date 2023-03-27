@@ -1,0 +1,6 @@
+Passo 1: sudo docker run --name tutorial-postgres -e POSTGRES_USER=usuario -e POSTGRES_PASSWORD=senha -e POSTGRES_DB=bancodados -d postgres
+
+Passo 2: sudo docker exec -it tutorial-postgres psql -h localhost -d bancodados -U usuario
+
+
+

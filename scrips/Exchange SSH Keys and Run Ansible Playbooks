@@ -1,0 +1,70 @@
+Exchange SSH Keys and Run Ansible Playbooks
+Introduction
+Ansible allows you to manage the configuration of your hardware and software. Since Ansible is agentless, it can be run from any system that has account credentials on any other system using standard SSH credentials and commands. In this hands-on lab, we will practice running a small playbook on a remote host to install a web server and then test it on our primary server.
+
+Setting Up the Environment
+Log In to the Master Server
+Open your terminal application, and log in to the master server using the credentials provided on the lab instructions page.
+ssh cloud_user@&lt;MASTER_PUBLIC_IP&gt;
+Type yes at the prompt.
+Enter your password at the prompt.
+Log In to the Client Server
+Open a new window of your terminal, and log in to the client server using the credentials provided on the lab instructions page.
+ssh cloud_user@&lt;CLIENT_PUBLIC_IP&gt;
+Type yes at the prompt.
+Enter your password at the prompt.
+Create the SSH Keys
+In your master server terminal window, add a new user called ansible.
+adduser ansible
+Set up a password for the new user.
+passwd ansible
+Enter a password for the user at the prompt. Enter it again when you're asked to confirm.
+Enable the ansible user to run commands as the root user without using a password.
+visudo
+In the sudoers file, locate the section that says Allow root to run any commands anywhere.
+Under the line below it (which starts with root), add the following:
+ansible     ALL=(ALL)     NOPASSWD: ALL
+Press ESC and type :wq to save our changes and exit the vi text editor.
+Switch to your client server terminal window, and repeat steps 1-7.
+Go back to your master server terminal window.
+Change to the ansible user.
+su ansible
+Create an SSH key.
+ssh-keygen
+Press Enter to accept the defaults.
+Copy the SSH key to the client.
+ssh-copy-id &lt;IP_ADDRESS&gt;
+Type yes at the prompt.
+Enter your password at the prompt.
+Exit Ansible.
+exit
+Update the Ansible hosts file.
+vi /etc/ansible/hosts
+At the top of the page, add the word client.
+Press ESC and type :wq to save the change and exit the vi text editor.
+Change to the /home/cloud_user directory.
+cd /home/cloud_user
+List the contents of the directory.
+ls
+Copy the playbook in this directory to the /ansible directory.
+cp playbook.yml /home/ansible
+Change to the /ansible directory.
+cd /home/ansible
+List the contents of the /ansible directory to verify that a copy of the playbook.yml file is there.
+ls
+Change the permissions on the playbook.yml file.
+chown ansible:ansible playbook.yml
+Check the permissions of the directory.
+ls -la
+Change to the ansible user.
+su ansible -
+List the contents of the current directory.
+ls
+Execute the Ansible playbook.
+ansible-playbook playbook.yml
+Install the Elinks Package on the Remote Client Server
+In the client server window of your terminal application, run the following command:
+elinks
+You should see an ELinks Welcome menu.
+Conclusion
+Congratulations, you've successfully completed this hands-on lab!
